@@ -1,7 +1,10 @@
 /* jshint node: true */
 'use strict';
 var BasePlugin = require('ember-cli-deploy-plugin');
+var Promise    = require('ember-cli/lib/ext/promise');
+var fs         = require('fs-extra');
 var path       = require('path');
+var move       = Promise.denodeify(fs.move);
 var targz      = require('tar.gz');
 
 module.exports = {
@@ -18,25 +21,71 @@ module.exports = {
 
       didBuild: function(context) {
         var self = this;
-        var distDir = context.distDir;
         var archivePath = this.readConfig('archivePath');
         var archiveName = this.readConfig('archiveName');
-        var fileName = path.join(archivePath, archiveName);
+        this.distDir = context.distDir;
 
-        this.log('saving tarball of ' + distDir + ' to ' + fileName);
+        // ensure our `archivePath` directory is avaiable
+        fs.mkdirsSync(archivePath);
 
-        return targz().compress(distDir, fileName)
+        return this._moveDistDir(context)
+          .then(function() {
+            return self._pack(self.distDir);
+          })
           .then(function(){
             self.log('tarball ok');
 
             return {
               archiveDir: archivePath,
               archiveName: archiveName
-            }
+            };
+          })
+          .then(function() {
+            self._cleanup(context);
           })
           .catch(function(err){
             throw new Error(err.stack);
           });
+      },
+
+      // create tarball
+      _pack: function(dir) {
+        var archivePath = this.readConfig('archivePath');
+        var archiveName = this.readConfig('archiveName');
+        var fileName = path.join(archivePath, archiveName);
+
+        this.log('saving tarball of ' + dir + ' to ' + fileName);
+
+        return targz().compress(dir, fileName);
+      },
+
+      // to allow configurable naming of the directory inside the tarball
+      _moveDistDir: function(context) {
+        var distDir = context.distDir;
+        var packedDirName = this.readConfig('packedDirName');
+        var archivePath = this.readConfig('archivePath');
+
+        if (packedDirName) {
+          packedDirName = path.join(archivePath, packedDirName);
+          this.log('moving ' + distDir + ' to ' + packedDirName);
+
+          this.distDir = packedDirName;
+          return move(distDir, packedDirName);
+        }
+
+        return Promise.resolve();
+      },
+
+      _cleanup: function(context) {
+        var distDir = context.distDir;
+
+        // revert distDir to original location if `packedDirName` was set
+        if (this.distDir !== distDir) {
+          this.log('moving ' + this.distDir + ' to ' + distDir, { verbose: true });
+          return move(this.distDir, distDir);
+        }
+
+        return Promise.resolve();
       }
     });
 

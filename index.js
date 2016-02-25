@@ -20,14 +20,19 @@ module.exports = {
         distDir: function(context) {
           return context.distDir;
         },
-        packedDirName: false
+        distFiles: function(context) {
+          return context.distFiles;
+        },
+        packedDirName: false,
+        addToDistFiles: false
       },
 
       didBuild: function(context) {
         var self = this;
-        var archivePath = this.readConfig('archivePath');
-        var archiveName = this.readConfig('archiveName');
-        this.distDir    = this.readConfig('distDir');
+        var archivePath    = this.readConfig('archivePath');
+        var archiveName    = this.readConfig('archiveName');
+        var addToDistFiles = this.readConfig('addToDistFiles');
+        this.distDir       = this.readConfig('distDir');
 
         // ensure our `archivePath` directory is avaiable
         fs.mkdirsSync(archivePath);
@@ -40,10 +45,17 @@ module.exports = {
             self._cleanup(context);
           })
           .then(function(){
+            if (addToDistFiles) {
+              var distArchivePath = path.join(self.distDir, archiveName);
+              fs.copySync(path.join(archivePath, archiveName),
+                          path.join(self.distDir, archiveName));
+              var distFiles = self.readConfig('distFiles');
+              distFiles.push(archiveName);
+              self.log('copied tarball to ' + distArchivePath);
+            }
             self.log('tarball ok');
-
             return {
-              archiveDir: archivePath,
+              archiveDir:  archivePath,
               archiveName: archiveName
             };
           })

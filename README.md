@@ -63,6 +63,15 @@ The name of the archive to be created. Currently only `.tar` is supported (will 
 
 *Default:* `build.tar`
 
+### addToDistFiles
+
+Set `addToDistFiles` to `true` if you would like the archive file to be added
+to the `distFiles` array so that it can be included in downstream
+pipeline steps. (The archive will automatically be copied into the
+`distDir` folder when this is `true`).
+
+*Default:* `false`
+
 ### packedDirName
 
 The name of the directory inside the tarball. By default, `context.distDir` is `deploy-dist` and gets packed up.  
@@ -75,6 +84,7 @@ Override this if you need the unpacked directory to be named something other tha
 The following properties are expected to be present on the deployment `context` object:
 
 - `distDir` (provided by [ember-cli-deploy-build][2])
+- `distFiles` (provided by [ember-cli-deploy-build][2])
 
 ## Running Tests
 

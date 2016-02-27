@@ -16,14 +16,18 @@ module.exports = {
 
       defaultConfig: {
         archivePath: path.join('tmp', 'deploy-archive'),
-        archiveName: 'build.tar'
+        archiveName: 'build.tar',
+        distDir: function(context) {
+          return context.distDir;
+        },
+        packedDirName: false
       },
 
       didBuild: function(context) {
         var self = this;
         var archivePath = this.readConfig('archivePath');
         var archiveName = this.readConfig('archiveName');
-        this.distDir = context.distDir;
+        this.distDir    = this.readConfig('distDir');
 
         // ensure our `archivePath` directory is avaiable
         fs.mkdirsSync(archivePath);
@@ -60,8 +64,8 @@ module.exports = {
       },
 
       // to allow configurable naming of the directory inside the tarball
-      _moveDistDir: function(context) {
-        var distDir = context.distDir;
+      _moveDistDir: function() {
+        var distDir = this.readConfig('distDir');
         var packedDirName = this.readConfig('packedDirName');
         var archivePath = this.readConfig('archivePath');
 
@@ -76,8 +80,8 @@ module.exports = {
         return Promise.resolve();
       },
 
-      _cleanup: function(context) {
-        var distDir = context.distDir;
+      _cleanup: function() {
+        var distDir = this.readConfig('distDir');
 
         // revert distDir to original location if `packedDirName` was set
         if (this.distDir !== distDir) {

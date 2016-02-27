@@ -36,6 +36,9 @@ module.exports = {
           .then(function() {
             return self._pack(self.distDir);
           })
+          .then(function() {
+            self._cleanup(context);
+          })
           .then(function(){
             self.log('tarball ok');
 
@@ -43,9 +46,6 @@ module.exports = {
               archiveDir: archivePath,
               archiveName: archiveName
             };
-          })
-          .then(function() {
-            self._cleanup(context);
           })
           .catch(function(err){
             throw new Error(err.stack);

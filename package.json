@@ -46,7 +46,10 @@
   },
   "keywords": [
     "ember-addon",
-    "ember-cli-deploy-plugin"
+    "ember-cli-deploy-plugin",
+    "archive",
+    "tar",
+    "targz"
   ],
   "dependencies": {
     "ember-cli-babel": "^5.1.5",

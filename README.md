@@ -68,7 +68,7 @@ The name of the archive to be created. Currently only `.tar` is supported (will 
 The name of the directory inside the tarball. By default, `context.distDir` is `deploy-dist` and gets packed up.  
 Override this if you need the unpacked directory to be named something other than `deploy-dist`.
 
-*Default:* `undefined`
+*Default:* `false`
 
 ## Prerequisites
 

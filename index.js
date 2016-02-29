@@ -43,7 +43,7 @@ module.exports = {
             self.log('tarball ok');
 
             return {
-              archiveDir: archivePath,
+              archivePath: archivePath,
               archiveName: archiveName
             };
           })

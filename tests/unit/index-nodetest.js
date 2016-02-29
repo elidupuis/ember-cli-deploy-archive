@@ -1,13 +1,19 @@
 /*jshint globalstrict: true*/
 'use strict';
 
-// var RSVP = require('ember-cli/lib/ext/promise');
+var Promise = require('ember-cli/lib/ext/promise');
 var assert  = require('ember-cli/tests/helpers/assert');
+var fs      = require('fs');
+var stat    = Promise.denodeify(fs.stat);
+var path    = require('path');
+var targz   = require('tar.gz');
+
+var ARCHIVE_NAME = 'build.tar';
+var ARCHIVE_PATH = process.cwd() + '/tmp/deploy-archive';
+var DIST_DIR = 'dist';
 
 describe('archive plugin', function() {
-  var subject;
-  var mockUi;
-  var context;
+  var subject, mockUi, context, plugin;
 
   before(function() {
     subject = require('../../index');
@@ -23,69 +29,93 @@ describe('archive plugin', function() {
       }
     };
 
+    plugin = subject.createDeployPlugin({
+      name: 'archive'
+    });
+
     context = {
-      distDir: process.cwd() + '/tests/fixtures/dist',
+      distDir: process.cwd() + '/tests/fixtures/' + DIST_DIR,
       ui: mockUi,
       config: {
         archive: {
-          archivePath: process.cwd() + '/tmp/deploy-archive',
-          archiveName: 'build.tar'
+          archivePath: ARCHIVE_PATH,
+          archiveName: ARCHIVE_NAME
         }
       }
-    }
+    };
   });
 
   it('has a name', function() {
-    var plugin = subject.createDeployPlugin({
-      name: 'archive'
-    });
-
     assert.equal(plugin.name, 'archive');
   });
 
-  it('implements the correct hooks', function() {
-    var plugin = subject.createDeployPlugin({
-      name: 'archive'
-    });
-
-    assert.equal(typeof plugin.configure, 'function');
-    assert.equal(typeof plugin.didBuild, 'function');
-  });
-
-  describe('configure hook', function() {
-    it('adds default config to the config object', function() {
-      delete context.config.archive.archivePath;
-      delete context.config.archive.archiveName;
-
-      assert.isUndefined(context.config.archive.archivePath);
-      assert.isUndefined(context.config.archive.archiveName);
-
-      var plugin = subject.createDeployPlugin({
-        name: 'archive'
-      });
+  describe('hooks', function() {
+    beforeEach(function() {
       plugin.beforeHook(context);
       plugin.configure(context);
-
-      assert.isDefined(context.config.archive.archivePath);
-      assert.isDefined(context.config.archive.archiveName);
     });
-  });
 
-  describe.skip('#didBuild hook', function() {
-    it('prints the begin message', function() {
-      var plugin = subject.createDeployPlugin({
-        name: 'archive'
+    it('implements the correct hooks', function() {
+      assert.equal(typeof plugin.configure, 'function');
+      assert.equal(typeof plugin.didBuild, 'function');
+    });
+
+    describe('configure hook', function() {
+      it('adds default config to the config object', function() {
+        delete context.config.archive.archivePath;
+        delete context.config.archive.archiveName;
+
+        assert.isUndefined(context.config.archive.archivePath);
+        assert.isUndefined(context.config.archive.archiveName);
+
+        var plugin = subject.createDeployPlugin({
+          name: 'archive'
+        });
+        plugin.beforeHook(context);
+        plugin.configure(context);
+
+        assert.isDefined(context.config.archive.archivePath);
+        assert.isDefined(context.config.archive.archiveName);
+      });
+    });
+
+    describe('didBuild hook', function() {
+
+      it('creates a tarball of the dist folder', function() {
+        this.timeout(10000);
+        return assert.isFulfilled(plugin.didBuild(context))
+          .then(function(result) {
+            var fileName = path.join(result.archivePath, result.archiveName);
+
+            return stat(fileName).then(function(stats) {
+              assert.ok(stats.isFile());
+            })
+            .then(function() {
+              return targz().extract(fileName, result.archivePath);
+            })
+            .then(function() {
+              var extractedDir = result.archivePath + '/' + DIST_DIR;
+
+              return stat(extractedDir).then(function(stats) {
+                assert.ok(stats.isDirectory());
+              });
+            });
+          });
       });
 
-      plugin.beforeHook(context);
-      return assert.isFulfilled(plugin.didBuild(context))
-        .then(function() {
-          assert.ok(true);
-          // assert.equal(mockUi.messages.length, 2);
-          // console.log('messages', mockUi.messages[0]), mockUi.messages[1]
-          // assert.match(mockUi.messages[0], /saving tarball of /);
-        });
+      it('adds proper data to the deployment context', function() {
+        return assert.isFulfilled(plugin.didBuild(context))
+          .then(function(result) {
+            assert.deepEqual(result, {
+              archivePath: ARCHIVE_PATH,
+              archiveName: ARCHIVE_NAME
+            });
+          });
+      });
+
+      it.skip('copies the dist folder in order to rename it, if `packedDirName` is set');
+      it.skip('returns the dist folder to it\'s original location, if `packedDirName` is set');
+
     });
   });
-
 });

@@ -53,10 +53,12 @@ describe('archive plugin', function() {
     beforeEach(function() {
       plugin.beforeHook(context);
       plugin.configure(context);
+      plugin.setup(context);
     });
 
     it('implements the correct hooks', function() {
       assert.equal(typeof plugin.configure, 'function');
+      assert.equal(typeof plugin.setup, 'function');
       assert.equal(typeof plugin.didBuild, 'function');
     });
 
@@ -79,36 +81,40 @@ describe('archive plugin', function() {
       });
     });
 
+    describe('setup hook', function() {
+      it('adds proper data to the deployment context', function() {
+        var result = plugin.setup(context);
+
+        assert.deepEqual(result, {
+          archivePath: ARCHIVE_PATH,
+          archiveName: ARCHIVE_NAME
+        });
+      });
+    });
+
     describe('didBuild hook', function() {
 
       it('creates a tarball of the dist folder', function() {
         this.timeout(10000);
+        var archivePath = context.config.archive.archivePath;
+        var archiveName = context.config.archive.archiveName;
+
         return assert.isFulfilled(plugin.didBuild(context))
-          .then(function(result) {
-            var fileName = path.join(result.archivePath, result.archiveName);
+          .then(function() {
+            var fileName = path.join(archivePath, archiveName);
 
             return stat(fileName).then(function(stats) {
               assert.ok(stats.isFile());
             })
             .then(function() {
-              return targz().extract(fileName, result.archivePath);
+              return targz().extract(fileName, archivePath);
             })
             .then(function() {
-              var extractedDir = result.archivePath + '/' + DIST_DIR;
+              var extractedDir = archivePath + '/' + DIST_DIR;
 
               return stat(extractedDir).then(function(stats) {
                 assert.ok(stats.isDirectory());
               });
-            });
-          });
-      });
-
-      it('adds proper data to the deployment context', function() {
-        return assert.isFulfilled(plugin.didBuild(context))
-          .then(function(result) {
-            assert.deepEqual(result, {
-              archivePath: ARCHIVE_PATH,
-              archiveName: ARCHIVE_NAME
             });
           });
       });

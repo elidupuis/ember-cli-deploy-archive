@@ -34,6 +34,7 @@ $ ember deploy
 For detailed information on what plugin hooks are and how they work, please refer to the [Plugin Documentation][1].
 
 - `configure`
+- `setup`
 - `didBuild`
 
 ## Configuration Options
@@ -69,6 +70,12 @@ The name of the directory inside the tarball. By default, `context.distDir` is `
 Override this if you need the unpacked directory to be named something other than `deploy-dist`.
 
 *Default:* `false`
+
+## Deployment Context
+
+`archivePath` and `archiveName` are added to the deployment context for use by other plugins. 
+Note that this is done in the `setup` hook, not in `didBuild` (where most of the action happens).
+This is to ensure the properties are available to hooks that run during `deploy:activate` and `deploy:list` commands.
 
 ## Prerequisites
 

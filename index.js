@@ -23,10 +23,18 @@ module.exports = {
         packedDirName: false
       },
 
+      setup: function(/* context */) {
+        this.log('setting `archivePath` and `archiveName` in deployment context', { verbose: true });
+
+        return {
+          archivePath: this.readConfig('archivePath'),
+          archiveName: this.readConfig('archiveName')
+        };
+      },
+
       didBuild: function(context) {
         var self = this;
         var archivePath = this.readConfig('archivePath');
-        var archiveName = this.readConfig('archiveName');
         this.distDir    = this.readConfig('distDir');
 
         // ensure our `archivePath` directory is avaiable
@@ -41,11 +49,6 @@ module.exports = {
           })
           .then(function(){
             self.log('tarball ok');
-
-            return {
-              archivePath: archivePath,
-              archiveName: archiveName
-            };
           })
           .catch(function(err){
             throw new Error(err.stack);

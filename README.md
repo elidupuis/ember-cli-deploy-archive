@@ -2,7 +2,7 @@
 
 > Ember CLI Deploy plugin to create an archive of your deployment build.
 
-[![](https://ember-cli-deploy.github.io/ember-cli-deploy-version-badges/plugins/ember-cli-deploy-build.svg)](http://ember-cli-deploy.github.io/ember-cli-deploy-version-badges/) [![Ember Observer Score](http://emberobserver.com/badges/ember-cli-deploy-archive.svg)](http://emberobserver.com/addons/ember-cli-deploy-archive)
+[![](https://ember-cli-deploy.github.io/ember-cli-deploy-version-badges/plugins/ember-cli-deploy-archive.svg)](http://ember-cli-deploy.github.io/ember-cli-deploy-version-badges/) [![Ember Observer Score](http://emberobserver.com/badges/ember-cli-deploy-archive.svg)](http://emberobserver.com/addons/ember-cli-deploy-archive) [![npm](https://img.shields.io/npm/v/ember-cli-deploy-archive.svg)](https://www.npmjs.com/package/ember-cli-deploy-archive)
 
 This plugin will create a tarball (`.tar.gz`) of your build directory and add it to the deployment context.
 

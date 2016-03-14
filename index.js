@@ -48,7 +48,7 @@ module.exports = {
             self._cleanup(context);
           })
           .then(function(){
-            self.log('tarball ok');
+            self.log('tarball ok', { verbose: true });
           })
           .catch(function(err){
             throw new Error(err.stack);
@@ -61,7 +61,7 @@ module.exports = {
         var archiveName = this.readConfig('archiveName');
         var fileName = path.join(archivePath, archiveName);
 
-        this.log('saving tarball of ' + dir + ' to ' + fileName);
+        this.log('saving tarball of ' + dir + ' to ' + fileName, { verbose: true });
 
         return targz().compress(dir, fileName);
       },
@@ -74,7 +74,7 @@ module.exports = {
 
         if (packedDirName) {
           packedDirName = path.join(archivePath, packedDirName);
-          this.log('moving ' + distDir + ' to ' + packedDirName);
+          this.log('moving ' + distDir + ' to ' + packedDirName, { verbose: true });
 
           this.distDir = packedDirName;
           return move(distDir, packedDirName);

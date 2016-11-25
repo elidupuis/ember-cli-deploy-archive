@@ -4,7 +4,8 @@ var BasePlugin = require('ember-cli-deploy-plugin');
 var Promise    = require('ember-cli/lib/ext/promise');
 var fs         = require('fs-extra');
 var path       = require('path');
-var move       = Promise.denodeify(fs.move);
+var copy       = Promise.denodeify(fs.copy);
+var remove     = Promise.denodeify(fs.remove);
 var targz      = require('tar.gz');
 
 module.exports = {
@@ -48,7 +49,7 @@ module.exports = {
             self._cleanup(context);
           })
           .then(function(){
-            self.log('tarball ok');
+            self.log('tarball ok', { verbose: true });
           })
           .catch(function(err){
             throw new Error(err.stack);
@@ -61,7 +62,7 @@ module.exports = {
         var archiveName = this.readConfig('archiveName');
         var fileName = path.join(archivePath, archiveName);
 
-        this.log('saving tarball of ' + dir + ' to ' + fileName);
+        this.log('saving tarball of ' + dir + ' to ' + fileName, { verbose: true });
 
         return targz().compress(dir, fileName);
       },
@@ -74,10 +75,10 @@ module.exports = {
 
         if (packedDirName) {
           packedDirName = path.join(archivePath, packedDirName);
-          this.log('moving ' + distDir + ' to ' + packedDirName);
+          this.log('copying ' + distDir + ' to ' + packedDirName, { verbose: true });
 
           this.distDir = packedDirName;
-          return move(distDir, packedDirName);
+          return copy(distDir, packedDirName);
         }
 
         return Promise.resolve();
@@ -88,8 +89,8 @@ module.exports = {
 
         // revert distDir to original location if `packedDirName` was set
         if (this.distDir !== distDir) {
-          this.log('moving ' + this.distDir + ' to ' + distDir, { verbose: true });
-          return move(this.distDir, distDir);
+          this.log('cleaning up ' + this.distDir, { verbose: true });
+          return remove(this.distDir);
         }
 
         return Promise.resolve();

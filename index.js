@@ -64,7 +64,12 @@ module.exports = {
 
         this.log('saving tarball of ' + dir + ' to ' + fileName, { verbose: true });
 
-        return targz().compress(dir, fileName);
+        var targzOptions = this.readConfig('targzOptions');
+        if (targzOptions) {
+          return targz({},targzOptions).compress(dir, fileName);
+        } else {
+          return targz().compress(dir, fileName);
+        }
       },
 
       // to allow configurable naming of the directory inside the tarball

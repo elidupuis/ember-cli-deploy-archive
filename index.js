@@ -1,10 +1,10 @@
 /* jshint node: true */
 'use strict';
 var BasePlugin = require('ember-cli-deploy-plugin');
-var Promise    = require('ember-cli/lib/ext/promise');
+var RSVP       = require('rsvp');
 var fs         = require('fs-extra');
 var path       = require('path');
-var move       = Promise.denodeify(fs.move);
+var move       = RSVP.denodeify(fs.move);
 var targz      = require('tar.gz');
 
 module.exports = {
@@ -80,7 +80,7 @@ module.exports = {
           return move(distDir, packedDirName);
         }
 
-        return Promise.resolve();
+        return RSVP.resolve();
       },
 
       _cleanup: function() {
@@ -92,7 +92,7 @@ module.exports = {
           return move(this.distDir, distDir);
         }
 
-        return Promise.resolve();
+        return RSVP.resolve();
       }
     });
 

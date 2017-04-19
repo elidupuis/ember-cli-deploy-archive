@@ -1,1 +1,1 @@
-some content here
+export const FOO = 42;

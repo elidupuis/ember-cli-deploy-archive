@@ -1,12 +1,16 @@
-/*jshint globalstrict: true*/
+/* eslint-env node */
 'use strict';
 
-var assert  = require('../helpers/assert');
-var fs      = require('fs');
-var RSVP    = require('rsvp');
-var stat    = RSVP.denodeify(fs.stat);
-var path    = require('path');
-var targz   = require('tar.gz');
+var chai  = require('chai');
+var chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);
+
+var assert = chai.assert;
+var RSVP = require('rsvp');
+var fs = require('fs');
+var stat = RSVP.denodeify(fs.stat);
+var path = require('path');
+var targz = require('tar.gz');
 
 var ARCHIVE_NAME = 'build.tar';
 var ARCHIVE_PATH = process.cwd() + '/tmp/deploy-archive';
@@ -16,7 +20,7 @@ describe('archive plugin', function() {
   var subject, mockUi, context, plugin;
 
   before(function() {
-    subject = require('../../index');
+    subject = require('../index');
   });
 
   beforeEach(function() {

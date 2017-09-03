@@ -1,26 +1,19 @@
 ---
 language: node_js
 node_js:
-  - "6"
+  # we recommend testing addons with the same minimum supported node version as Ember CLI
+  # so that your addon works for all apps
+  - "4"
 
 sudo: false
+dist: trusty
 
 cache:
-  directories:
-    - $HOME/.npm
-    - $HOME/.cache # includes bowers cache
-
-matrix:
-  fast_finish: true
+  yarn: true
 
 before_install:
-  - "npm config set spin false"
-  - "npm install -g npm@^2"
+  - curl -o- -L https://yarnpkg.com/install.sh | bash
+  - export PATH=$HOME/.yarn/bin:$PATH
 
 install:
-  - npm install -g bower
-  - npm install
-  - bower install
-
-script:
-  - npm test
+  - yarn install --no-lockfile --non-interactive

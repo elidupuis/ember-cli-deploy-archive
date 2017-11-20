@@ -10,7 +10,7 @@ var RSVP = require('rsvp');
 var fs = require('fs');
 var stat = RSVP.denodeify(fs.stat);
 var path = require('path');
-var targz = require('tar.gz');
+var tar = require('tar');
 
 var ARCHIVE_NAME = 'build.tar';
 var ARCHIVE_PATH = process.cwd() + '/tmp/deploy-archive';
@@ -111,7 +111,10 @@ describe('archive plugin', function() {
               assert.ok(stats.isFile());
             })
             .then(function() {
-              return targz().extract(fileName, archivePath);
+              return tar.x({
+                file: fileName,
+                C: archivePath
+              });
             })
             .then(function() {
               var extractedDir = archivePath + '/' + DIST_DIR;

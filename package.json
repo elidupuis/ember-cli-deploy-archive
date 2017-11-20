@@ -23,20 +23,20 @@
     "test": "node tests/runner.js && ./node_modules/.bin/eslint index.js lib/* tests/**/*-test.js"
   },
   "dependencies": {
-    "ember-cli-babel": "^6.3.0",
+    "ember-cli-babel": "^6.8.0",
     "ember-cli-deploy-plugin": "^0.2.9",
-    "fs-extra": "^0.26.5",
-    "rsvp": "^3.5.0",
-    "tar.gz": "^1.0.5"
+    "fs-extra": "^4.0.2",
+    "rsvp": "^4.7.0",
+    "tar": "^4.0.2"
   },
   "devDependencies": {
-    "chai": "^3.3.0",
-    "chai-as-promised": "^5.1.0",
-    "ember-cli": "~2.15.0",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "ember-cli": "~2.16.2",
     "ember-cli-release": "^1.0.0-beta.2",
-    "eslint": "^3.18.0",
-    "glob": "^5.0.15",
-    "mocha": "^2.3.3"
+    "eslint": "^4.11.0",
+    "glob": "^7.1.2",
+    "mocha": "^4.0.1"
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"

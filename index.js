@@ -5,7 +5,7 @@ var RSVP       = require('rsvp');
 var fs         = require('fs-extra');
 var path       = require('path');
 var move       = RSVP.denodeify(fs.move);
-var targz      = require('tar.gz');
+var tar      = require('tar');
 
 module.exports = {
   name: 'ember-cli-deploy-archive',
@@ -59,11 +59,18 @@ module.exports = {
       _pack: function(dir) {
         var archivePath = this.readConfig('archivePath');
         var archiveName = this.readConfig('archiveName');
+        var containingDirectory = path.dirname(dir);
+        var target = path.basename(dir);
+
         var fileName = path.join(archivePath, archiveName);
 
         this.log('saving tarball of ' + dir + ' to ' + fileName);
 
-        return targz().compress(dir, fileName);
+        return tar.c({
+          gzip: true,
+          file: fileName,
+          C: containingDirectory
+        }, [target]);
       },
 
       // to allow configurable naming of the directory inside the tarball

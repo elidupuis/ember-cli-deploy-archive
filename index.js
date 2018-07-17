@@ -32,7 +32,7 @@ module.exports = {
         };
       },
 
-      didBuild: function(context) {
+      willUpload: function(context) {
         var self = this;
         var archivePath = this.readConfig('archivePath');
         this.distDir    = this.readConfig('distDir');

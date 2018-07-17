@@ -35,7 +35,7 @@ For detailed information on what plugin hooks are and how they work, please refe
 
 - `configure`
 - `setup`
-- `didBuild`
+- `willUpload`
 
 ## Configuration Options
 
@@ -74,7 +74,7 @@ Override this if you need the unpacked directory to be named something other tha
 ## Deployment Context
 
 `archivePath` and `archiveName` are added to the deployment context for use by other plugins. 
-Note that this is done in the `setup` hook, not in `didBuild` (where most of the action happens).
+Note that this is done in the `setup` hook, not in `willUpload` (where most of the action happens).
 This is to ensure the properties are available to hooks that run during `deploy:activate` and `deploy:list` commands.
 
 ## Prerequisites

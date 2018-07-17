@@ -63,7 +63,7 @@ describe('archive plugin', function() {
     it('implements the correct hooks', function() {
       assert.equal(typeof plugin.configure, 'function');
       assert.equal(typeof plugin.setup, 'function');
-      assert.equal(typeof plugin.didBuild, 'function');
+      assert.equal(typeof plugin.willUpload, 'function');
     });
 
     describe('configure hook', function() {
@@ -96,14 +96,14 @@ describe('archive plugin', function() {
       });
     });
 
-    describe('didBuild hook', function() {
+    describe('willUpload hook', function() {
 
       it('creates a tarball of the dist folder', function() {
         this.timeout(10000);
         var archivePath = context.config.archive.archivePath;
         var archiveName = context.config.archive.archiveName;
 
-        return assert.isFulfilled(plugin.didBuild(context))
+        return assert.isFulfilled(plugin.willUpload(context))
           .then(function() {
             var fileName = path.join(archivePath, archiveName);
 

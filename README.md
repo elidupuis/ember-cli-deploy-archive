@@ -1,4 +1,4 @@
-# ember-cli-deploy-archive [![Build Status](https://travis-ci.org/elidupuis/ember-cli-deploy-archive.svg?branch=master)](https://travis-ci.org/elidupuis/ember-cli-deploy-archive)
+# ember-cli-deploy-archive [![CI](https://github.com/elidupuis/ember-cli-deploy-archive/actions/workflows/ci.yaml/badge.svg)](https://github.com/elidupuis/ember-cli-deploy-archive/actions/workflows/ci.yaml)
 
 > Ember CLI Deploy plugin to create an archive of your deployment build.
 
